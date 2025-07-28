@@ -47,38 +47,31 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptr
 
 ```
 pdf-heading-detection/
-├── README.md                      # This file
+├── README.md                      # Complete documentation
 ├── requirements.txt               # Python dependencies
-├── Implementation.md              # Technical implementation details
-├── pdf_to_json_extractor.py      # Main production extractor (NEW)
-├── production_inference.py       # Production inference system
-├── dataset_creator.py            # Dataset creation and labeling
-├── train_real_model.py           # Model training pipeline
-├── pdf_heading_detector.py       # Initial prototype (legacy)
-├── production_heading_model.pkl  # Trained model file
+├── pdf_to_json_extractor.py      # Main production extractor
+├── demo.py                        # Usage examples and demos
+├── production_heading_model.pkl  # Trained AI model
 ├── input/                         # Input PDF directory
-│   ├── example.pdf
-│   ├── Kehe 103.pdf
-│   └── EJ1172284.pdf
-├── output/                        # Generated outputs
-│   ├── *.csv                     # Analysis results
-│   └── *.json                    # Extracted JSON files
-└── dataset/                       # Training datasets
-    └── labeled_dataset.csv
+│   ├── example.pdf               # Sample academic paper
+│   ├── Kehe 103.pdf             # Sample textbook
+│   └── EJ1172284.pdf            # Sample research paper
+├── output/                        # Generated JSON outputs
+└── pdf_heading_detection_env/     # Python virtual environment
 ```
 
 ## 🎯 Quick Start
 
 ### Extract PDF to JSON (Main Feature)
 ```bash
-# Basic usage
+# Basic usage - extracts to [filename]_extracted.json
 python pdf_to_json_extractor.py input/document.pdf
 
 # Specify output file
-python pdf_to_json_extractor.py input/document.pdf -o extracted_data.json
+python pdf_to_json_extractor.py input/document.pdf -o output/extracted_data.json
 
-# Adjust confidence threshold
-python pdf_to_json_extractor.py input/document.pdf -c 0.7 -o output.json
+# Adjust confidence threshold (0.3-0.6 recommended)
+python pdf_to_json_extractor.py input/document.pdf -c 0.4 -o output/output.json
 ```
 
 ### Expected JSON Output Format
@@ -115,24 +108,22 @@ Options:
 
 ```bash
 # Process single PDF with default settings
-python pdf_to_json_extractor.py input/research_paper.pdf
+python pdf_to_json_extractor.py input/example.pdf
 
 # High confidence extraction with custom output
-python pdf_to_json_extractor.py input/textbook.pdf -c 0.8 -o textbook_structure.json
+python pdf_to_json_extractor.py input/textbook.pdf -c 0.5 -o output/textbook_structure.json
 
 # Verbose mode for debugging
-python pdf_to_json_extractor.py input/document.pdf --verbose
+python pdf_to_json_extractor.py input/document.pdf --verbose -o output/debug_output.json
 ```
 
 ### Interactive Analysis (Legacy Interface)
 ```bash
-# Interactive PDF analysis with detailed output
-python production_inference.py
+# For advanced users - detailed analysis interface
+python production_inference.py  # (removed in clean version)
 
-# Choose from:
-# 1. Analyze all PDFs in input folder
-# 2. Analyze specific PDF
-# 3. Exit
+# Use the main extractor instead:
+python pdf_to_json_extractor.py input/your_file.pdf -c 0.4 --verbose
 ```
 
 ## 🤖 Model Performance
@@ -160,20 +151,17 @@ python production_inference.py
 
 ## 🔨 Development
 
-### Train Custom Model
+### Train Custom Model (Advanced)
 ```bash
-# Create labeled dataset from your PDFs
-python dataset_creator.py
-
-# Train model on your data
-python train_real_model.py
+# Note: Training scripts removed in clean version
+# The included model works well for most document types
+# Contact repository owner for training pipeline if needed
 ```
 
-### Add Training Data
+### Add More Test PDFs
 1. Place PDF files in `input/` directory
-2. Run `python dataset_creator.py`
-3. Use interactive labeling or automatic detection
-4. Retrain model with `python train_real_model.py`
+2. Run: `python pdf_to_json_extractor.py input/your_file.pdf -o output/result.json`
+3. Adjust confidence threshold as needed (`-c 0.3` to `-c 0.6`)
 
 ### Model Components
 - **Feature Engineering**: 39 features including font, spatial, and linguistic
@@ -186,15 +174,15 @@ python train_real_model.py
 ### Test on Sample PDFs
 ```bash
 # Test the system with provided samples
-python pdf_to_json_extractor.py input/example.pdf -o test_output.json
-python pdf_to_json_extractor.py input/Kehe\ 103.pdf -o test_textbook.json
+python pdf_to_json_extractor.py input/example.pdf -c 0.4 -o output/example_result.json
+python pdf_to_json_extractor.py "input/Kehe 103.pdf" -c 0.5 -o output/textbook_result.json
+python pdf_to_json_extractor.py input/EJ1172284.pdf -c 0.4 -o output/research_result.json
 ```
 
-### Validate Model
+### Validate Results
 ```bash
-# Run production inference for detailed analysis
-python production_inference.py
-# Select option 1 to analyze all PDFs
+# Run with verbose output to see confidence scores
+python pdf_to_json_extractor.py input/example.pdf --verbose -c 0.3
 ```
 
 ## 📊 Dependencies
@@ -225,7 +213,8 @@ See `requirements.txt` for complete dependency list with exact versions.
 
 1. **Model Not Found Error**
    ```bash
-   python train_real_model.py  # Train the model first
+   # The model is included in the repository
+   # If missing, download from releases or contact repository owner
    ```
 
 2. **NLTK Download Issues**
@@ -252,14 +241,14 @@ python pdf_to_json_extractor.py input/document.pdf --verbose
 ## 📈 Performance Optimization
 
 ### For Better Accuracy
-1. **Add Training Data**: Include more PDFs similar to your target documents
-2. **Adjust Confidence**: Lower threshold for more headings, higher for precision
-3. **Custom Features**: Modify feature engineering for specific document types
+1. **Adjust Confidence**: Try different thresholds (`-c 0.3` to `-c 0.6`)
+2. **Document Quality**: Ensure PDF has extractable text (not scanned images)
+3. **Formatting**: Works best with PDFs that have clear heading formatting
 
 ### For Speed
-1. **Batch Processing**: Process multiple PDFs in one session
-2. **Feature Caching**: Reuse extracted features for similar documents
-3. **Model Optimization**: Use feature selection to reduce computation
+1. **Batch Processing**: Process multiple PDFs with shell scripts
+2. **Confidence Tuning**: Use higher confidence to reduce false positives
+3. **File Size**: System works best with PDFs under 50 pages
 
 ## 🤝 Contributing
 
@@ -272,14 +261,13 @@ python pdf_to_json_extractor.py input/document.pdf --verbose
 ### Development Setup
 ```bash
 # Install development dependencies
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 
-# Run tests
-python -m pytest tests/
+# Run basic tests
+python pdf_to_json_extractor.py input/example.pdf -o output/test.json
 
-# Code formatting
-black pdf_to_json_extractor.py
-flake8 pdf_to_json_extractor.py
+# Validate system
+python demo.py
 ```
 
 ## 📄 License
@@ -306,14 +294,13 @@ For issues, questions, or contributions:
 - [ ] Support for scanned PDFs (OCR integration)
 - [ ] Multi-language support
 - [ ] Web interface
-- [ ] API endpoint
+- [ ] REST API endpoint
 - [ ] Docker containerization
-- [ ] Cloud deployment options
 - [ ] Enhanced table/figure detection
-- [ ] Custom model training UI
 
 ---
 
 **Last Updated**: July 28, 2025  
 **Version**: 1.0.0  
-**Python**: 3.8+
+**Python**: 3.8+  
+**Status**: Production Ready
